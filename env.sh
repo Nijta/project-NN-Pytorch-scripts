@@ -1,6 +1,7 @@
 #!/bin/bash
 # if necessary, load conda environment
-eval "$(conda shell.bash hook)"
+#eval "$(conda shell.bash hook)"
+. venv/bin/activate
 conda activate pytorch-1.6
 
 # when running in ./projects/*/*, add this top directory

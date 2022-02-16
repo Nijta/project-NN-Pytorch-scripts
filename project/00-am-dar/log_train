@@ -1,0 +1,349 @@
+[94m-------------------------------------------------[0m
+[94m---  Start program 2021-10-24 22:08:00.453821 ---[0m
+[94m-------------------------------------------------[0m
+[94mLoad module: config[0m
+[94mLoad module: model[0m
+cudnn_deterministic set to False
+cudnn_benchmark set to True
+[94m----------------------------------------------------------------------[0m
+[94m---  Loading dataset dataset_vc2022_trn 2021-10-24 22:08:00.762205 ---[0m
+[94m----------------------------------------------------------------------[0m
+[94mRead sequence info: ./dataset_vc2022_trn_utt_length.dic[0m
+[94mLoad mean/std from ./dataset_vc2022_trn_mean_std_input.bin and ./dataset_vc2022_trn_mean_std_output.bin[0m
+[94m----------------------------------------------------------------------[0m
+[94m---  Loading dataset dataset_vc2022_val 2021-10-24 22:08:01.276024 ---[0m
+[94m----------------------------------------------------------------------[0m
+[94mRead sequence info: ./dataset_vc2022_val_utt_length.dic[0m
+[94m--------------------------------------------------------[0m
+[94m---  Start model training 2021-10-24 22:08:03.951975 ---[0m
+[94m--------------------------------------------------------[0m
+Optimizer:
+  Type: AdamW 
+  Learing rate: 0.000100
+  Epochs: 200
+  No-best-epochs: 50
+Merge datasets by: concatenate
+Dataset dataset_vc2022_trn:
+  Time steps: 16687686 
+  Data sequence num: 28400
+  Maximum sequence length: 3323
+  Minimum sequence length: 14
+  Inputs
+    Dirs:
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/ppg
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/xvector
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/f0
+    Exts:['.ppg', '.xvector', '.f0']
+    Dims:[256, 512, 1]
+    Reso:[1, 1, 1]
+    Norm:[True, True, True]
+  Outputs
+    Dirs:
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/mel
+    Exts:['.mel']
+    Dims:[80]
+    Reso:[1]
+    Norm:[True]
+{'batch_size': 32, 'shuffle': False, 'num_workers': 3, 'sampler': 'block_shuffle_by_length'}
+Merge datasets by: concatenate
+Dataset dataset_vc2022_val:
+  Time steps: 1208448 
+  Data sequence num: 2220
+  Maximum sequence length: 2898
+  Minimum sequence length: 19
+  Inputs
+    Dirs:
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/ppg
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/xvector
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/f0
+    Exts:['.ppg', '.xvector', '.f0']
+    Dims:[256, 512, 1]
+    Reso:[1, 1, 1]
+    Norm:[True, True, True]
+  Outputs
+    Dirs:
+        /home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data/mel
+    Exts:['.mel']
+    Dims:[80]
+    Reso:[1]
+    Norm:[True]
+{'batch_size': 32, 'shuffle': False, 'num_workers': 3, 'sampler': 'block_shuffle_by_length'}
+[94m
+Use single GPU: Tesla V100-DGXS-32GB
+[0m
+[94mModel check:[0m
+[OK]: prepare_mean_std found
+[OK]: normalize_input found
+[OK]: normalize_target found
+[OK]: denormalize_output found
+[OK]: forward found
+[OK]: use inference, alternative method for inference
+[OK]: loss is ignored, loss defined within model module
+[OK]: other_setups is ignored, other setup functions before training
+[OK]: flag_validation is ignored, flag to indicate train or validation set
+[OK]: validation is ignored, deprecated. Please use model.flag_validation
+[OK]: finish_up_inference is ignored, method to finish up work after inference
+[94mModel check done
+[0m
+[94mModel infor:[0m
+Model(
+  (m_base): Sequential(
+    (0): Linear(in_features=769, out_features=512, bias=True)
+    (1): Tanh()
+    (2): Linear(in_features=512, out_features=512, bias=True)
+    (3): Tanh()
+    (4): LSTM(512, 128, batch_first=True, bidirectional=True)
+  )
+  (m_fdback): CombineFeedBack(
+    (m_gate): GatedActWithNoise()
+    (m_fb_trans): Sequential(
+      (0): Linear(in_features=80, out_features=80, bias=True)
+      (1): Linear(in_features=80, out_features=80, bias=True)
+    )
+  )
+  (m_fb_proc): Sequential(
+    (0): LSTMLayer(
+      (m_lstm): LSTM(336, 512, batch_first=True)
+    )
+    (1): LSTMLayer(
+      (m_lstm): LSTM(512, 512, batch_first=True)
+    )
+  )
+  (m_fb_proc_out): Linear(in_features=512, out_features=80, bias=True)
+  (m_post): PostNet(
+    (m_post): Sequential(
+      (0): PostNetCNNLayer(
+        (m_cnn): Conv1d(80, 80, kernel_size=(5,), stride=(1,), padding=(4,))
+      )
+      (1): GatedActWithNoise()
+      (2): PostNetCNNLayer(
+        (m_cnn): Conv1d(80, 80, kernel_size=(5,), stride=(1,), padding=(4,))
+      )
+      (3): GatedActWithNoise()
+      (4): PostNetCNNLayer(
+        (m_cnn): Conv1d(80, 80, kernel_size=(5,), stride=(1,), padding=(4,))
+      )
+      (5): GatedActWithNoise()
+      (6): PostNetCNNLayer(
+        (m_cnn): Conv1d(80, 80, kernel_size=(5,), stride=(1,), padding=(4,))
+      )
+      (7): GatedActWithNoise()
+      (8): PostNetCNNLayer(
+        (m_cnn): Conv1d(80, 80, kernel_size=(5,), stride=(1,), padding=(4,))
+      )
+    )
+  )
+  (m_loss): MSELoss()
+)
+Parameter number: 5370752
+
+[94mLoss check[0m
+[94mLoss check done
+[0m
+[94mLoad check point, resume training[0m
+--------------------------------------------------------------
+  Epoch |  Duration(s) |   Train loss |     Dev loss |  Best
+--------------------------------------------------------------
+      0 |        172.7 |       0.5565 |       0.2645 |   yes
+      1 |        132.6 |       0.3214 |       0.2360 |   yes
+      2 |        132.8 |       0.2833 |       0.2097 |   yes
+      3 |        131.5 |       0.2611 |       0.1959 |   yes
+      4 |        131.2 |       0.2464 |       0.1867 |   yes
+      5 |        131.9 |       0.2344 |       0.1773 |   yes
+      6 |        131.5 |       0.2247 |       0.1695 |   yes
+      7 |        133.0 |       0.2174 |       0.1658 |   yes
+      8 |        132.6 |       0.2125 |       0.1625 |   yes
+      9 |        130.4 |       0.2078 |       0.1583 |   yes
+     10 |        128.8 |       0.2029 |       0.1561 |   yes
+     11 |        127.9 |       0.2007 |       0.1533 |   yes
+     12 |        127.6 |       0.1959 |       0.1539 |    no
+     13 |        127.0 |       0.1944 |       0.1489 |   yes
+     14 |        132.7 |       0.1912 |       0.1487 |   yes
+     15 |        128.5 |       0.1881 |       0.1460 |   yes
+     16 |        130.5 |       0.1864 |       0.1438 |   yes
+     17 |        130.3 |       0.1850 |       0.1463 |    no
+     18 |        130.7 |       0.1834 |       0.1424 |   yes
+     19 |        132.4 |       0.1801 |       0.1431 |    no
+     20 |        129.3 |       0.1787 |       0.1416 |   yes
+     21 |        127.9 |       0.1771 |       0.1398 |   yes
+     22 |        129.0 |       0.1762 |       0.1409 |    no
+     23 |        132.8 |       0.1744 |       0.1399 |    no
+     24 |        129.1 |       0.1737 |       0.1373 |   yes
+     25 |        128.5 |       0.1730 |       0.1376 |    no
+     26 |        128.9 |       0.1703 |       0.1362 |   yes
+     27 |        128.3 |       0.1709 |       0.1366 |    no
+     28 |        128.9 |       0.1701 |       0.1351 |   yes
+     29 |        128.7 |       0.1677 |       0.1341 |   yes
+     30 |        129.3 |       0.1665 |       0.1340 |   yes
+     31 |        128.9 |       0.1662 |       0.1350 |    no
+     32 |        129.8 |       0.1647 |       0.1333 |   yes
+     33 |        130.1 |       0.1642 |       0.1336 |    no
+     34 |        129.5 |       0.1640 |       0.1341 |    no
+     35 |        140.1 |       0.1621 |       0.1330 |   yes
+     36 |        129.6 |       0.1624 |       0.1322 |   yes
+     37 |        130.4 |       0.1613 |       0.1317 |   yes
+     38 |        132.3 |       0.1620 |       0.1319 |    no
+     39 |        129.3 |       0.1607 |       0.1317 |   yes
+     40 |        136.0 |       0.1596 |       0.1317 |    no
+     41 |        129.2 |       0.1579 |       0.1307 |   yes
+     42 |        128.8 |       0.1572 |       0.1304 |   yes
+     43 |        129.6 |       0.1568 |       0.1302 |   yes
+     44 |        128.6 |       0.1561 |       0.1310 |    no
+     45 |        131.1 |       0.1563 |       0.1310 |    no
+     46 |        129.1 |       0.1544 |       0.1293 |   yes
+     47 |        131.0 |       0.1541 |       0.1295 |    no
+     48 |        127.5 |       0.1537 |       0.1294 |    no
+     49 |        129.3 |       0.1527 |       0.1297 |    no
+     50 |        128.9 |       0.1522 |       0.1283 |   yes
+     51 |        128.0 |       0.1517 |       0.1283 |   yes
+     52 |        134.0 |       0.1525 |       0.1292 |    no
+     53 |        129.4 |       0.1506 |       0.1290 |    no
+     54 |        128.7 |       0.1492 |       0.1286 |    no
+     55 |        128.2 |       0.1497 |       0.1273 |   yes
+     56 |        129.2 |       0.1489 |       0.1296 |    no
+     57 |        129.6 |       0.1475 |       0.1275 |    no
+     58 |        129.7 |       0.1470 |       0.1274 |    no
+     59 |        129.8 |       0.1484 |       0.1277 |    no
+     60 |        130.9 |       0.1461 |       0.1271 |   yes
+     61 |        135.0 |       0.1472 |       0.1271 |    no
+     62 |        129.7 |       0.1451 |       0.1270 |   yes
+     63 |        129.0 |       0.1446 |       0.1264 |   yes
+     64 |        131.9 |       0.1440 |       0.1291 |    no
+     65 |        128.6 |       0.1435 |       0.1263 |   yes
+     66 |        130.3 |       0.1435 |       0.1266 |    no
+     67 |        129.1 |       0.1432 |       0.1261 |   yes
+     68 |        129.0 |       0.1425 |       0.1260 |   yes
+     69 |        129.2 |       0.1426 |       0.1255 |   yes
+     70 |        129.2 |       0.1411 |       0.1255 |   yes
+     71 |        129.0 |       0.1407 |       0.1259 |    no
+     72 |        129.1 |       0.1415 |       0.1262 |    no
+     73 |        129.0 |       0.1405 |       0.1255 |    no
+     74 |        128.5 |       0.1401 |       0.1254 |   yes
+     75 |        129.9 |       0.1399 |       0.1248 |   yes
+     76 |        128.7 |       0.1390 |       0.1249 |    no
+     77 |        128.6 |       0.1402 |       0.1256 |    no
+     78 |        128.6 |       0.1374 |       0.1250 |    no
+     79 |        128.2 |       0.1372 |       0.1244 |   yes
+     80 |        129.5 |       0.1375 |       0.1242 |   yes
+     81 |        131.0 |       0.1379 |       0.1263 |    no
+     82 |        129.0 |       0.1386 |       0.1248 |    no
+     83 |        129.2 |       0.1385 |       0.1244 |    no
+     84 |        129.5 |       0.1366 |       0.1238 |   yes
+     85 |        129.3 |       0.1350 |       0.1232 |   yes
+     86 |        129.6 |       0.1352 |       0.1238 |    no
+     87 |        129.3 |       0.1353 |       0.1240 |    no
+     88 |        129.7 |       0.1354 |       0.1236 |    no
+     89 |        128.7 |       0.1346 |       0.1237 |    no
+     90 |        129.5 |       0.1354 |       0.1242 |    no
+     91 |        128.8 |       0.1340 |       0.1237 |    no
+     92 |        128.3 |       0.1339 |       0.1238 |    no
+     93 |        128.6 |       0.1337 |       0.1232 |   yes
+     94 |        128.7 |       0.1347 |       0.1239 |    no
+     95 |        132.0 |       0.1325 |       0.1228 |   yes
+     96 |        130.3 |       0.1321 |       0.1244 |    no
+     97 |        130.0 |       0.1330 |       0.1232 |    no
+     98 |        128.7 |       0.1336 |       0.1231 |    no
+     99 |        129.5 |       0.1318 |       0.1226 |   yes
+    100 |        174.3 |       0.1317 |       0.1227 |    no
+    101 |        165.3 |       0.1320 |       0.1234 |    no
+    102 |        164.7 |       0.1315 |       0.1221 |   yes
+    103 |        164.8 |       0.1304 |       0.1221 |    no
+    104 |        164.0 |       0.1312 |       0.1220 |   yes
+    105 |        163.4 |       0.1309 |       0.1229 |    no
+    106 |        161.9 |       0.1301 |       0.1221 |    no
+    107 |        162.8 |       0.1291 |       0.1220 |   yes
+    108 |        162.0 |       0.1297 |       0.1230 |    no
+    109 |        162.3 |       0.1310 |       0.1216 |   yes
+    110 |        162.7 |       0.1295 |       0.1219 |    no
+    111 |        162.7 |       0.1296 |       0.1218 |    no
+    112 |        162.4 |       0.1285 |       0.1222 |    no
+    113 |        162.2 |       0.1303 |       0.1218 |    no
+    114 |        162.8 |       0.1280 |       0.1218 |    no
+    115 |        162.2 |       0.1285 |       0.1215 |   yes
+    116 |        162.8 |       0.1281 |       0.1213 |   yes
+    117 |        162.2 |       0.1282 |       0.1226 |    no
+    118 |        162.5 |       0.1286 |       0.1217 |    no
+    119 |        161.9 |       0.1306 |       0.1224 |    no
+    120 |        162.5 |       0.1270 |       0.1219 |    no
+    121 |        162.4 |       0.1262 |       0.1226 |    no
+    122 |        162.9 |       0.1281 |       0.1219 |    no
+    123 |        162.5 |       0.1276 |       0.1225 |    no
+    124 |        162.2 |       0.1262 |       0.1216 |    no
+    125 |        161.9 |       0.1263 |       0.1220 |    no
+    126 |        162.7 |       0.1270 |       0.1216 |    no
+    127 |        163.5 |       0.1258 |       0.1221 |    no
+    128 |        163.8 |       0.1260 |       0.1216 |    no
+    129 |        164.1 |       0.1266 |       0.1221 |    no
+    130 |        163.8 |       0.1268 |       0.1216 |    no
+    131 |        163.8 |       0.1258 |       0.1214 |    no
+    132 |        163.1 |       0.1252 |       0.1208 |   yes
+    133 |        163.6 |       0.1292 |       0.1223 |    no
+    134 |        163.9 |       0.1268 |       0.1222 |    no
+    135 |        164.0 |       0.1249 |       0.1212 |    no
+    136 |        162.5 |       0.1237 |       0.1207 |   yes
+    137 |        162.3 |       0.1249 |       0.1215 |    no
+    138 |        162.0 |       0.1245 |       0.1212 |    no
+    139 |        162.2 |       0.1255 |       0.1203 |   yes
+    140 |        161.9 |       0.1238 |       0.1214 |    no
+    141 |        162.0 |       0.1242 |       0.1206 |    no
+    142 |        162.7 |       0.1243 |       0.1210 |    no
+    143 |        162.1 |       0.1238 |       0.1206 |    no
+    144 |        162.2 |       0.1232 |       0.1213 |    no
+    145 |        162.5 |       0.1249 |       0.1208 |    no
+    146 |        161.8 |       0.1241 |       0.1203 |   yes
+    147 |        161.8 |       0.1233 |       0.1204 |    no
+    148 |        162.3 |       0.1238 |       0.1213 |    no
+    149 |        162.3 |       0.1233 |       0.1203 |    no
+    150 |        161.8 |       0.1237 |       0.1209 |    no
+    151 |        161.5 |       0.1227 |       0.1200 |   yes
+    152 |        161.9 |       0.1215 |       0.1204 |    no
+    153 |        161.4 |       0.1231 |       0.1232 |    no
+    154 |        162.2 |       0.1253 |       0.1216 |    no
+    155 |        161.6 |       0.1234 |       0.1205 |    no
+    156 |        161.6 |       0.1229 |       0.1228 |    no
+    157 |        162.1 |       0.1211 |       0.1201 |    no
+    158 |        162.4 |       0.1216 |       0.1206 |    no
+    159 |        162.2 |       0.1223 |       0.1211 |    no
+    160 |        161.6 |       0.1223 |       0.1211 |    no
+    161 |        162.3 |       0.1211 |       0.1209 |    no
+    162 |        161.6 |       0.1211 |       0.1202 |    no
+    163 |        162.3 |       0.1221 |       0.1197 |   yes
+    164 |        162.0 |       0.1215 |       0.1204 |    no
+    165 |        162.6 |       0.1215 |       0.1199 |    no
+    166 |        161.1 |       0.1200 |       0.1201 |    no
+    167 |        160.2 |       0.1220 |       0.1203 |    no
+    168 |        160.2 |       0.1226 |       0.1200 |    no
+    169 |        162.1 |       0.1207 |       0.1199 |    no
+    170 |        161.9 |       0.1215 |       0.1218 |    no
+    171 |        162.1 |       0.1199 |       0.1202 |    no
+    172 |        161.7 |       0.1218 |       0.1202 |    no
+    173 |        161.7 |       0.1205 |       0.1195 |   yes
+    174 |        161.8 |       0.1200 |       0.1199 |    no
+    175 |        161.9 |       0.1191 |       0.1194 |   yes
+    176 |        161.9 |       0.1199 |       0.1203 |    no
+    177 |        162.2 |       0.1197 |       0.1204 |    no
+    178 |        162.1 |       0.1191 |       0.1199 |    no
+    179 |        162.2 |       0.1204 |       0.1195 |    no
+    180 |        161.3 |       0.1193 |       0.1197 |    no
+    181 |        162.2 |       0.1200 |       0.1195 |    no
+    182 |        162.1 |       0.1193 |       0.1201 |    no
+    183 |        161.6 |       0.1193 |       0.1194 |   yes
+    184 |        162.0 |       0.1191 |       0.1191 |   yes
+    185 |        161.7 |       0.1192 |       0.1207 |    no
+    186 |        161.1 |       0.1208 |       0.1198 |    no
+    187 |        161.1 |       0.1188 |       0.1201 |    no
+    188 |        162.6 |       0.1193 |       0.1196 |    no
+    189 |        162.1 |       0.1179 |       0.1193 |    no
+    190 |        161.1 |       0.1187 |       0.1214 |    no
+    191 |        160.4 |       0.1186 |       0.1209 |    no
+    192 |        160.6 |       0.1188 |       0.1200 |    no
+    193 |        160.5 |       0.1184 |       0.1200 |    no
+    194 |        161.1 |       0.1189 |       0.1196 |    no
+    195 |        161.1 |       0.1176 |       0.1192 |    no
+    196 |        161.2 |       0.1189 |       0.1202 |    no
+    197 |        161.0 |       0.1175 |       0.1195 |    no
+    198 |        161.0 |       0.1176 |       0.1194 |    no
+    199 |        161.6 |       0.1179 |       0.1208 |    no
+--------------------------------------------------------------
+[94mTraining finished[0m
+[94mModel is saved to[0m[94m./trained_network.pt[0m
