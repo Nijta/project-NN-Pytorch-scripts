@@ -23,12 +23,11 @@ __copyright__ = "Copyright 2020, Xin Wang"
 #  about the data sets
 #  2. multiple datasets can be specified in the list. They will be loaded
 #  and concatenated as the final training/validation set
-trn_set_name = ['dataset_libritts100_trn']
-val_set_name = ['dataset_libritts100_val']
+trn_set_name = ['dataset_vc2022_trn']
+val_set_name = ['dataset_vc2022_val']
 
 # for convenience
-#tmp = '/home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data'
-tmp = '/home/bsrivast/nijta/pytorch-nii/exp/am_nsf_data_pytorch_16k/train_libritts_16k'
+tmp = '/home/smg/wang/WORK/WORK/WORK/voice-privacy-challenge-2022/baseline1/data'
 
 # File lists (text file, one data name per line, without name extension)
 #  len(trn_list) should be equal to len(trn_set_name)
@@ -52,8 +51,7 @@ input_dirs = [[tmp + '/ppg', tmp + '/xvector', tmp + '/f0']]
 #
 #  Here, it means that ppg is 256 in dimension, xvector is 512 in dimension,
 #  and F0 has one dimension
-#input_dims = [256, 512, 1]
-input_dims = [346, 512, 1]
+input_dims = [256, 512, 1]
 
 # File name extension for input features
 #  input_exts = [name_extention_of_feature_1, ...]
